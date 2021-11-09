@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+    proxy:
+        image: nginx:latest
+        container_name: proxy
+        networks:
+            - local-network
+        ports:
+            - "80:80"
+        depends_on:
+            - biomarker-cockpit
+            - vocal
+            - social
+            - global
+            - question
+        # command: 
+        restart: unless-stopped
+    biomarker-cockpit:
+        image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-cockpit:latest
+        container_name: biomarker-cockpit
+        networks:
+            - local-network
+        ports:
+            - "5001:80"
+        restart: unless-stopped
+    vocal:
+        image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/vocal-biomarker:latest
+        container_name: biomarker-vocal
+        networks:
+            - local-network
+        ports:
+            - "9001:80"
+        restart: unless-stopped
+    social:
+        image: 7715941344009.dkr.ecr.eu-central-1.amazonaws.com/social-biomaker
+        container_name: biomarker-social
+        networks:
+            - local-network
+        ports:
+            - "7001:80"
+        restart: unless-stopped
+    global:
+        image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/local-global-biomarker:latest
+        container_name: biomarker-global
+        networks:
+            - local-network
+        ports:
+            - "4001:80"
+        restart: unless-stopped
+    question:
+        image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/questionnaire-biomarker:latest
+        container_name: question
+        networks:
+            - local-network
+        ports:
+            - "6001:80"
+        restart: unless-stopped
+
+networks:
+    local-network:
