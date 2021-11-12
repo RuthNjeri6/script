@@ -28,6 +28,6 @@ cd -- "$(dirname "$BASH_SOURCE")"
         --password-stdin 715941344009.dkr.ecr.eu-central-1.amazonaws.com
     
     docker-compose down
-    docker-compose pull
+    docker-compose pull cockpit vocal global gaze questionnaire social
     echo "done Pulling images"
     docker-compose up -d --remove-orphans

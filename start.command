@@ -1,6 +1,5 @@
 #!/bin/sh
-cd -- "$(dirname "$BASH_SOURCE")"
-
+export PATH=/usr/bin:/bin:$PATH
 # open docker if its not open
 if (! docker stats --no-stream ); then
     # On Mac OS this would be the terminal command to launch Docker
@@ -12,4 +11,4 @@ if (! docker stats --no-stream ); then
     sleep 1
     done
 fi
-open -a Safari http://localhost
+open http://localhost
