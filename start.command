@@ -11,4 +11,8 @@ if (! docker stats --no-stream ); then
     sleep 1
     done
 fi
+# echo "coping audio files...."
+# docker cp -a vocal:/home/app/webapp/media/audios/. ./container_data/audios
+# echo "Done coping audio files...."
+
 open http://localhost

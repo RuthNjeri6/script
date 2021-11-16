@@ -32,6 +32,7 @@ spinUp (){
         --username AWS \
         --password-stdin 715941344009.dkr.ecr.eu-central-1.amazonaws.com
     # docker run --rm -d -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 715941344009.dkr.ecr.eu-central-1.amazonaws.com 
+
     docker-compose up -d --remove-orphans
 }
 
