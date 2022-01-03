@@ -9,7 +9,7 @@ cd -- "$(dirname "$BASH_SOURCE")"
     while (! docker stats --no-stream ); do
     # Docker takes a few seconds to initialize
     echo "Waiting for Docker to launch..."
-    sleep 1
+    sleep 30
     done
     fi
     # if [ -x "$(command -v aws)" ]; then
@@ -34,6 +34,10 @@ cd -- "$(dirname "$BASH_SOURCE")"
         --password-stdin 715941344009.dkr.ecr.eu-central-1.amazonaws.com
 
     docker-compose down 
-    biomarkers-local_static_volume biomarkers-local_social_static_volume biomarkers-local_global_static_volume
+    docker volume rm biomarkers-local_cockpit_static_volume biomarkers-local_static_volume biomarkers-local_social_static_volume biomarkers-local_global_static_volume biomarkers-local_aq_static_volume biomarkers-local_gaze_static_volume
     docker-compose pull
-    docker-compose up --force-recreate -d --remove-orphans 
+    docker-compose up --force-recreate -d --remove-orphans
+
+
+
+

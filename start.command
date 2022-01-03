@@ -1,4 +1,5 @@
 #!/bin/sh
+cd -- "$(dirname "$BASH_SOURCE")"
 export PATH=/usr/bin:/bin:$PATH
 # open docker if its not open
 if (! docker stats --no-stream ); then
@@ -8,11 +9,18 @@ if (! docker stats --no-stream ); then
     while (! docker stats --no-stream ); do
     # Docker takes a few seconds to initialize
     echo "Waiting for Docker to launch..."
-    sleep 1
+    sleep 30
     done
 fi
 # echo "coping audio files...."
 # docker cp -a vocal:/home/app/webapp/media/audios/. ./container_data/audios
 # echo "Done coping audio files...."
-
+docker-compose up -d
+sudo docker exec -i -t mongo bash
+mongo
+use admin
+db.createUser({user:"default",pwd:"default",roles:[{role:"root",db:"admin"}]})
+exit
+exit
+mongo -u "default" -p "default"  --authenticationDatabase "admin"
 open http://localhost

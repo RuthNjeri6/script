@@ -9,3 +9,5 @@ You will be interacting with setup process time to time as the dependencies are 
 ### Update the Application
 1. To update the application, double click on the file "update.command" and wait for the process to complete.
 2. Start the application
+
+Note: Turn off AirPlay Receiver in the “Sharing” System Preference
