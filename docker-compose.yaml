@@ -28,24 +28,20 @@ services:
   cockpit:
     image: cockpit
     # image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-cockpit:offline
-    pull_policy: always
     container_name: cockpit
     ports:
       - "5000:80"
     volumes:
       - cockpit_static_volume:/usr/share/nginx/html/cockpit/assets
     restart: unless-stopped
-    depends_on:
-      - keycloak
 
   # vocal biomarker service
   vocal:
-    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/vocal-biomarker
-    # image: vocal
+    image: vocal
     command: bash -c "python manage.py collectstatic --no-input && gunicorn vocal_biomaker.wsgi:application --bind 0.0.0.0:8001"
     container_name: vocal
-    expose:
-      - 8001
+    ports:
+      - "8001:80"
     volumes:
       - static_volume:/home/app/webapp/staticfiles
       - vocal_data:/home/app/webapp/media/audios
@@ -56,14 +52,11 @@ services:
   # emotional biomarker service
   social:
     image: social
-    # image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/social-biomaker:latest
     command: bash -c "python manage.py collectstatic --no-input && gunicorn voice_capt.wsgi:application --bind 0.0.0.0:7000"
     volumes:
         - social_static_volume:/home/app/webapp/social/staticfiles
         - social_data:/home/app/webapp/social/media/videos
     container_name: social
-    # environment:
-    #   - EMOTION_MONGO_URI=$EMOTION_MONGO_URI
     env_file:
     - ./.env
     expose:
@@ -87,7 +80,6 @@ services:
   
   #gaze service
   gaze:
-    # image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/gaze-tracker:latest
     image: gaze
     container_name: gaze
     expose:
@@ -104,7 +96,6 @@ services:
   #questionnaire service
   questionnaire:
     image: aq-frontend
-    # image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-questionnaire:offline
     container_name: questionnnaire
     ports:
       - "6000:80"
@@ -127,46 +118,18 @@ services:
     volumes:
       - db:/data/db
       - ./.mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-
-  # java authentication
-  # java:
-  #   image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-authentication:latest
-  #   container_name: auth
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - auth:/usr/app/target
-  #   restart: on-failure
   
   # questionnaire backend service
   aq-backend:
     depends_on:
       - mongodb
-      # - keycloak
     container_name: aq-backend
     image: aq-backend
-    # image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-questionnaire-backend:latest
     restart: on-failure
     expose:
       - 3001
     env_file:
       - ./.env
-
-  # keycloak service
-  keycloak:
-    image: wizzn/keycloak:14
-    container_name: keycloak
-    ports:
-      - "8080:8080"
-    volumes:
-      - keycloak_data:/opt/jboss/keycloak/standalone/data/
-      - ./imports:/opt/jboss/keycloak/imports
-    command: 
-      - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
-    environment:
-      - KEYCLOAK_USER='admin'
-      - KEYCLOAK_PASSWORD='Gr@C3mwoi'
-    restart: on-failure
 
 volumes:
   static_volume:
@@ -178,5 +141,4 @@ volumes:
   db:
   social_data:
   vocal_data:
-  keycloak_data:
   gaze_data:
