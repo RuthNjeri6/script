@@ -25,8 +25,7 @@ services:
     
   # biomarker cockpit service
   cockpit:
-    image: cockpit
-    # image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-cockpit:offline
+    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-cockpit:latest
     container_name: cockpit
     ports:
       - "5000:80"
@@ -36,29 +35,25 @@ services:
 
   # vocal biomarker service
   vocal:
-    image: vocal
-    # command: bash -c "python manage.py collectstatic --no-input && gunicorn vocal_biomaker.wsgi:application --bind 0.0.0.0:8001"
-    command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8001"
+    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/vocal-biomarker:latest
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn vocal_biomaker.wsgi:application --bind 0.0.0.0:8001"
     container_name: vocal
     ports:
       - "8001:80"
     volumes:
       - static_volume:/home/app/webapp/staticfiles
       - vocal_data:/home/app/webapp/media/audios
-      - /Users/ruthnjeri/work/social-bm/vocal_biomaker:/home/app/webapp
     env_file:
       - ./.env
     restart: on-failure
 
   # emotional biomarker service
   social:
-    image: social
-    command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:7000"
-    # command: bash -c "python manage.py collectstatic --no-input && gunicorn voice_capt.wsgi:application --bind 0.0.0.0:7000"
+    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/social-biomaker:latest
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn voice_capt.wsgi:application --bind 0.0.0.0:7000"
     volumes:
         - social_static_volume:/home/app/webapp/social/staticfiles
         - social_data:/home/app/webapp/social/media/videos
-        - /Users/ruthnjeri/work/Digital-social-BM:/home/app/webapp/social
     container_name: social
     env_file:
     - ./.env
@@ -68,46 +63,34 @@ services:
   
   # local-global biomarker service
   global:
-    # command: bash -c "python manage.py collectstatic --no-input && gunicorn local_global.wsgi:application --bind 0.0.0.0:4000"
-    # image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/local-global-biomarker:latest
-    command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:4000"
-    image: global
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn local_global.wsgi:application --bind 0.0.0.0:4000"
+    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/local-global-biomarker:latest
     container_name: global
     env_file:
     - ./.env
-    # environment:
-    #   - GLOBAL_MONGO_URI=$GLOBAL_MONGO_URI
-    #   - DJANGO_ALLOWED_HOSTS=$DJANGO_ALLOWED_HOSTS
-    #   - DJANGO_DEBUG=$DJANGO_DEBUG
     volumes:
         - global_static_volume:/home/app/webapp/global/staticfiles
-        - /Users/ruthnjeri/work/local_global:/home/app/webapp/global
     expose:
       - 4000
     restart: on-failure
   
   #gaze service
   gaze:
-    image: gaze
+    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/gaze-tracker:latest
     container_name: gaze
     expose:
       - 9000
     env_file:
     - ./.env
-    # environment:
-    #   - DJANGO_ALLOWED_HOSTS=$DJANGO_ALLOWED_HOSTS
-    #   - DJANGO_DEBUG=$DJANGO_DEBUG
     volumes:
       - gaze_static_volume:/home/app/webapp/gaze/staticfiles
       - gaze_data:/home/app/webapp/gaze/media
-      - /Users/ruthnjeri/work/gaze-tracker/gaze_tracker:/home/app/webapp/gaze
-    # command: bash -c "python manage.py collectstatic --no-input && gunicorn gaze_tracker.wsgi:application --bind 0.0.0.0:9000"
-    command: bash -c "python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:9000"
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn gaze_tracker.wsgi:application --bind 0.0.0.0:9000"
     restart: on-failure
 
   #questionnaire service
   questionnaire:
-    image: aq-frontend
+    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-questionnaire:latest
     container_name: questionnnaire
     ports:
       - "6000:80"
@@ -134,7 +117,7 @@ services:
   # questionnaire backend service
   aq-backend:
     container_name: aq-backend
-    image: aq-backend
+    image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-questionnaire-backend:latest
     restart: on-failure
     expose:
       - 3001
