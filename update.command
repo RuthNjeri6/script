@@ -12,21 +12,7 @@ cd -- "$(dirname "$BASH_SOURCE")"
     sleep 30
     done
     fi
-    # if [ -x "$(command -v aws)" ]; then
-    #     echo "You already have aws cli...Good to go!"
-    # else
-    #     echo "Installing awscli..."
-    #     brew install awscli
-    #     echo "Please Enter your aws credentials and press Return (Warning: if you dont have the credentials press Control + C to cancel )...."
-    #     aws configure
-    # fi
-    # echo "coping audio files...."
-    # docker cp -a vocal:/home/app/webapp/media/audios/. ./container_data/audios
-    # docker cp -a social:/home/app/webapp/social/media/videos/. ./container_data/videos
-    # docker cp social:/home/app/webapp/social/data.csv ./container_data/social/data.csv
-    # docker cp global:/home/app/webapp/social/data.csv ./container_data/global/data.csv
-    # echo "Done coping audio files...."
-
+    
     docker run --rm  -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password \
         --region eu-central-1 \
     | docker login \
@@ -34,7 +20,7 @@ cd -- "$(dirname "$BASH_SOURCE")"
         --password-stdin 715941344009.dkr.ecr.eu-central-1.amazonaws.com
 
     docker-compose down 
-    docker volume rm biomarkers-local_cockpit_static_volume biomarkers-local_static_volume biomarkers-local_social_static_volume biomarkers-local_global_static_volume biomarkers-local_aq_static_volume biomarkers-local_gaze_static_volume
+    docker volume rm biomarkers-offline_cockpit_static_volume biomarkers-offline_static_volume biomarkers-offline_social_static_volume biomarkers-offline_global_static_volume biomarkers-offline_aq_static_volume biomarkers-offline_gaze_static_volume
     docker-compose pull
     docker-compose up --force-recreate -d --remove-orphans
 

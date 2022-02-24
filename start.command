@@ -16,11 +16,4 @@ fi
 # docker cp -a vocal:/home/app/webapp/media/audios/. ./container_data/audios
 # echo "Done coping audio files...."
 docker-compose up -d
-sudo docker exec -i -t mongo bash
-mongo
-use admin
-db.createUser({user:"default",pwd:"default",roles:[{role:"root",db:"admin"}]})
-exit
-exit
-mongo -u "default" -p "default"  --authenticationDatabase "admin"
 open http://localhost

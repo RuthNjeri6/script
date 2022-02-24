@@ -16,6 +16,7 @@ services:
       - "80:80"
     restart: on-failure
     depends_on:
+      - aq-backend
       - cockpit
       - vocal
       - social
@@ -28,10 +29,10 @@ services:
     image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-cockpit:latest
     container_name: cockpit
     ports:
-      - "5000:80"
+      - "5001:80"
     volumes:
       - cockpit_static_volume:/usr/share/nginx/html/cockpit/assets
-    restart: unless-stopped
+    restart: on-failure
 
   # vocal biomarker service
   vocal:
@@ -70,6 +71,7 @@ services:
     - ./.env
     volumes:
         - global_static_volume:/home/app/webapp/global/staticfiles
+        - local_data:/home/app/webapp/global/media
     expose:
       - 4000
     restart: on-failure
@@ -137,3 +139,4 @@ volumes:
   social_data:
   vocal_data:
   gaze_data:
+  local_data:

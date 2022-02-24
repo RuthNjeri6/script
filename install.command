@@ -27,7 +27,10 @@ spinUp (){
         echo "Please Enter your aws credentials and press Return (Warning: if you dont have the credentials press Control + C to cancel )...."
         aws configure
     fi
-
+    
+    echo "removing previous containers....."
+    docker container stop $(docker container ls -aq) && docker system prune -af --volumes
+    
     docker run --rm  -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password \
         --region eu-central-1 \
     | docker login \
