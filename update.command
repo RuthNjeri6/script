@@ -24,32 +24,32 @@ NC='\033[0m'
 
     aws_status=$?
     if test $aws_status -ne 0 ; then
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the administrator to report the problem.${NC}"
         exit 1
     fi
 
     docker-compose down  2>> log/update_errors.txt
     down_status=$?
     if test $down_status -ne 0; then
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the administrator to report the problem.${NC}"
         exit 1
     fi
     docker volume rm biomarkers-offline_cockpit_static_volume biomarkers-offline_static_volume biomarkers-offline_social_static_volume biomarkers-offline_global_static_volume biomarkers-offline_aq_static_volume biomarkers-offline_gaze_static_volume 2>> log/update_errors.txt
     rm_status=$?
     if test $rm_status -ne 0; then
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the administrator to report the problem.${NC}"
         exit 1
     fi
     docker-compose pull 2>> log/update_errors.txt
     pull_status=$?
     if test $pull_status -ne 0; then
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the administrator to report the problem.${NC}"
         exit 1
     fi
     docker-compose up --force-recreate -d 2>> log/update_errors.txt
     up_status=$?
     if test $up_status -ne 0; then
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the administrator to report the problem.${NC}"
         exit 1
     fi
     sleep 30

@@ -1,7 +1,9 @@
 ### Installation and Setup
 1. Double click on the file "install.command" to install and setup the Application.
 You will be interacting with setup process time to time as the dependencies are being installed. eg. typing in your password to authorize the installation
-2. The process will take some time so be patient, you will get a message "Process Completed" in the Terminal.
+2. The process will take some time so be patient, you will get a message(highlighted in Green) that says; "Software Installed successfully!!!. Start the Application by opening the start.command file."
+3. If during step 2 above you encounter this message instead; "An error occurred while installing the software!!!. Please contact the administrator to report the problem." or the installation process just stopped without either of the two messages, Please send me the install_errors.txt file located in the log folder. 
+4. If step 3 above is Successful. Move to the instruction below.
 
 ### Starting up the Application ( NOTE: You should repeat this step every time you are starting up the application ) 
 1. Double click the start.command file to open the Application in your browser.

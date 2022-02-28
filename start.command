@@ -26,6 +26,6 @@ if test $status -eq 0 ; then
     sleep 30
     open http://localhost
 else
-    echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+    echo "${RED}An error occurred while installing the software!!!. Please contact the administrator to report the problem.${NC}"
     exit 1
 fi

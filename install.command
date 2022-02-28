@@ -75,14 +75,14 @@ spinUp (){
 
     aws_status=$?
     if test $aws_status -ne 0 ; then
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
 
     docker-compose -f docker-compose-mongo.yaml  up -d --force-recreate 2>> log/install_errors.txt
     create_mongo_status=$?
     if test $create_mongo_status -ne 0 ; then
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
     setupMongo
@@ -90,7 +90,7 @@ spinUp (){
     if test $data_status -eq 0 ; then
         echo "${BLUE}Database SetUp completed...${NC}"
     else
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
     docker-compose up -d --force-recreate 2>> log/install_errors.txt
@@ -99,7 +99,7 @@ spinUp (){
         sleep 30
         echo "${GREEN}Software Installed successfully!!!. Start the Application by opening the start.command file.${NC}"
     else
-        echo "${RED}An error occured while installing the software!!!. Please contact the adminstrator to report the problem.${NC}"
+        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
 }
