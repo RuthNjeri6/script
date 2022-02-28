@@ -23,6 +23,8 @@ services:
       - global
       - gaze
       - questionnaire
+    networks:
+      - bm
     
   # biomarker cockpit service
   cockpit:
@@ -33,11 +35,15 @@ services:
     volumes:
       - cockpit_static_volume:/usr/share/nginx/html/cockpit/assets
     restart: on-failure
+    # depends_on:
+    #   - mongo
+    networks:
+      - bm
 
   # vocal biomarker service
   vocal:
     image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/vocal-biomarker:latest
-    command: bash -c "python manage.py collectstatic --no-input && gunicorn vocal_biomaker.wsgi:application --bind 0.0.0.0:8001"
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn vocal_biomaker.wsgi:application --bind 0.0.0.0:8001 --timeout 600"
     container_name: vocal
     ports:
       - "8001:80"
@@ -47,11 +53,13 @@ services:
     env_file:
       - ./.env
     restart: on-failure
+    networks:
+      - bm
 
   # emotional biomarker service
   social:
     image: 715941344009.dkr.ecr.eu-central-1.amazonaws.com/social-biomaker:latest
-    command: bash -c "python manage.py collectstatic --no-input && gunicorn voice_capt.wsgi:application --bind 0.0.0.0:7000"
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn voice_capt.wsgi:application --bind 0.0.0.0:7000 --timeout 600"
     volumes:
         - social_static_volume:/home/app/webapp/social/staticfiles
         - social_data:/home/app/webapp/social/media/videos
@@ -61,6 +69,8 @@ services:
     expose:
       - 7000
     restart: on-failure
+    networks:
+      - bm
   
   # local-global biomarker service
   global:
@@ -75,6 +85,8 @@ services:
     expose:
       - 4000
     restart: on-failure
+    networks:
+      - bm
   
   #gaze service
   gaze:
@@ -87,8 +99,10 @@ services:
     volumes:
       - gaze_static_volume:/home/app/webapp/gaze/staticfiles
       - gaze_data:/home/app/webapp/gaze/media
-    command: bash -c "python manage.py collectstatic --no-input && gunicorn gaze_tracker.wsgi:application --bind 0.0.0.0:9000"
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn gaze_tracker.wsgi:application --bind 0.0.0.0:9000 --timeout 600"
     restart: on-failure
+    networks:
+      - bm
 
   #questionnaire service
   questionnaire:
@@ -101,20 +115,8 @@ services:
       - aq_static_volume:/usr/share/nginx/html/assets
     depends_on:
       - aq-backend
-
-  # database service
-  mongodb:
-    image: mongo:latest
-    restart: on-failure
-    container_name: mongo
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=$DB_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASSWORD
-    ports:
-      - "27017:27017"
-    volumes:
-      - db:/data/db
-      - ./.mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - bm
   
   # questionnaire backend service
   aq-backend:
@@ -125,8 +127,8 @@ services:
       - 3001
     env_file:
       - ./.env
-    depends_on:
-      - mongodb
+    networks:
+      - bm
 
 volumes:
   static_volume:
@@ -135,8 +137,10 @@ volumes:
   gaze_static_volume:
   cockpit_static_volume:
   aq_static_volume:
-  db:
   social_data:
   vocal_data:
   gaze_data:
   local_data:
+networks:
+  bm:
+    external: true
