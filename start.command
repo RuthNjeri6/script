@@ -1,9 +1,5 @@
 #!/bin/sh
 cd -- "$(dirname "$BASH_SOURCE")"
-export PATH=/usr/bin:/bin:$PATH
-export $(grep -v '^#' .env | xargs)
-echo "${DJANGO_SECRET_KEY} ${MONGODB_URI}"
-exit 1
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'

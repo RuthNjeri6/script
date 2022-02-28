@@ -2,10 +2,6 @@
 set -e
 # navigate to file directory
 cd -- "$(dirname "$BASH_SOURCE")"
-# get environment variables
-export PATH=/usr/bin:/bin:$PATH
-export $(grep -v '^#' .env | xargs)
-echo "${DJANGO_SECRET_KEY} ${MONGODB_URI}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -29,6 +25,9 @@ do
         mv $hidden_file .$hidden_file 2>> log/install_errors.txt
     fi
 done
+# get environment variables
+export PATH=/usr/bin:/bin:$PATH
+export $(grep -v '^#' .env | xargs)
 # function to dump and restore database
 setupMongo (){
     # docker exec mongo mongodump --archive=dump.db.gz --gzip --uri="mongodb+srv://tas:tas123@autismus.ypmhk.mongodb.net/aq" && \
