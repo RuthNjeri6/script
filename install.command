@@ -1,13 +1,18 @@
 #!/bin/sh
+# exit when any command fails
 set -e
-# navigate to file directory
-cd -- "$(dirname "$BASH_SOURCE")"
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m'
-# make the other scripts executable
+
+# echo an error message before exiting with a status not equal to 0
+trap '[[ $? -ne 0 ]] && echo  "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"' EXIT
+
+# navigate to file directory
+cd -- "$(dirname "$BASH_SOURCE")"
+
+# make the other scripts executable(updte.command, start.command)
 files=("update.command" "start.command")
 for file in ${files[@]}; do
     if [[ -x "$file" ]]
@@ -17,6 +22,8 @@ for file in ${files[@]}; do
         chmod +x $file 2>> log/install_errors.txt
     fi
 done
+
+# hide files with sentitive data
 hidden_files=("env" "mongo-init.js")
 for hidden_file in ${hidden_files[@]}
 do
@@ -25,18 +32,35 @@ do
         mv $hidden_file .$hidden_file 2>> log/install_errors.txt
     fi
 done
-# get environment variables
+
+# get environment variables to be used in data setup on the mongo container
 export PATH=/usr/bin:/bin:$PATH
 export $(grep -v '^#' .env | xargs)
+
 # function to dump and restore database
 setupMongo (){
-    # docker exec mongo mongodump --archive=dump.db.gz --gzip --uri="mongodb+srv://tas:tas123@autismus.ypmhk.mongodb.net/aq" && \
-    docker exec mongo mongodump --archive=dump.db.gz --gzip --uri="${MONGODB_URI}" && \
-    # docker exec mongo mongorestore --archive=dump.db.gz --gzip -v --nsExclude='aq.*responses' --nsExclude='aq.participants' questionnaire -u admin -p 123456 --noIndexRestore  && \
-    docker exec mongo mongorestore --archive=dump.db.gz --gzip -v --nsExclude='aq.*responses' --nsExclude='aq.participants' questionnaire -u ${DB_USERNAME} -p ${DB_PASSWORD} --noIndexRestore  && \
-    docker exec mongo mongo mongo:27017/admin /docker-entrypoint-initdb.d/mongo-init.js -u ${DB_USERNAME} -p ${DB_PASSWORD} && \
+    docker exec mongo mongodump --archive=dump.db.gz --gzip --uri=${MONGO_CLOUD_URI} 2>> log/install_errors.txt
+    mongodump_status=$?
+    if test $mongodump_status -ne 0 ; then
+        exit 1
+    fi
+    docker exec mongo mongorestore --archive=dump.db.gz --gzip -v --nsExclude='aq.*responses' --nsExclude='aq.participants' questionnaire -u ${DB_USERNAME} -p ${DB_PASSWORD} --noIndexRestore 2>> log/install_errors.txt
+    mongorestore_status=$?
+    if test $mongorestore_status -ne 0 ; then
+        exit 1
+    fi
+    docker exec mongo mongo mongo:27017/admin /docker-entrypoint-initdb.d/mongo-init.js -u ${DB_USERNAME} -p ${DB_PASSWORD} 2>> log/install_errors.txt
+    mongoinit_status=$?
+    if test $mongoinit_status -ne 0 ; then
+        exit 1
+    fi
     docker exec mongo mongo mongo:27017/aq --eval 'db.investigators.remove({"admin": { "$exists": false } })' -u ${DB_USERNAME} -p ${DB_PASSWORD} --authenticationDatabase ${DB_USERNAME} 2>> log/install_errors.txt
+    mongocleanup_status=$?
+    if test $mongocleanup_status -ne 0 ; then
+        exit 1
+    fi
 }
+
 # function to spin up the containers
 spinUp (){
     # open docker if its not open
@@ -58,7 +82,11 @@ spinUp (){
         echo "${BLUE}Please Enter your aws credentials and press Return (Warning: if you dont have the credentials press Control + C to cancel )....${NC}"
         aws configure
     fi
-    containers="$(docker container ls -aq)"
+    
+    # list all the containers on the host machine
+    containers="$(docker container ls -aq)" 2>> log/install_errors.txt
+
+    # remove all existing containers
     if [ ${#containers[@]} -ne 0 ]; then
         for container in ${containers[@]}; do
             echo $container
@@ -66,6 +94,7 @@ spinUp (){
         done
     fi
 
+    # run aws docker image and login to ecr
     docker run --rm  -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password \
         --region eu-central-1 \
     | docker login \
@@ -74,31 +103,32 @@ spinUp (){
 
     aws_status=$?
     if test $aws_status -ne 0 ; then
-        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
 
+    # run the mongo db container 
     docker-compose -f docker-compose-mongo.yaml  up -d --force-recreate 2>> log/install_errors.txt
     create_mongo_status=$?
     if test $create_mongo_status -ne 0 ; then
-        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
+
+    # add data to mongo db 
     setupMongo
     data_status=$?
     if test $data_status -eq 0 ; then
         echo "${BLUE}Database SetUp completed...${NC}"
     else
-        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
-    docker-compose up -d --force-recreate 2>> log/install_errors.txt
+
+    # run the other containers i.e all the biomarkers, the backend and nginx
+    docker-compose --project-name biomarker-offline up -d --force-recreate 2>> log/install_errors.txt
     install_status=$?
     if test $install_status -eq 0; then
         sleep 30
         echo "${GREEN}Software Installed successfully!!!. Start the Application by opening the start.command file.${NC}"
     else
-        echo "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"
         exit 1
     fi
 }
@@ -130,5 +160,5 @@ else
 
     softwareupdate --install-rosetta
 fi
-
+# calling the spinup function
 spinUp
