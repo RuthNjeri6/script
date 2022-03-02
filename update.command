@@ -40,21 +40,21 @@ cd -- "$(dirname "$BASH_SOURCE")"
     fi
 
     # stop all the running containers
-    docker-compose down  2>> log/update_errors.txt
+    docker-compose --project-name biomarker-offline down  2>> log/update_errors.txt
     down_status=$?
     if test $down_status -ne 0; then
         exit 1
     fi
 
     # remove the static volumes from the stoped containers
-    docker volume rm biomarkers-offline_cockpit_static_volume biomarkers-offline_static_volume biomarkers-offline_social_static_volume biomarkers-offline_global_static_volume biomarkers-offline_aq_static_volume biomarkers-offline_gaze_static_volume 2>> log/update_errors.txt
+    docker volume rm biomarker-offline_cockpit_static_volume biomarker-offline_static_volume biomarker-offline_social_static_volume biomarker-offline_global_static_volume biomarker-offline_aq_static_volume biomarker-offline_gaze_static_volume 2>> log/update_errors.txt
     rm_status=$?
     if test $rm_status -ne 0; then
         exit 1
     fi
 
     # pull the latest images 
-    docker-compose pull 2>> log/update_errors.txt
+    docker-compose --project-name biomarker-offline pull 2>> log/update_errors.txt
     pull_status=$?
     if test $pull_status -ne 0; then
         exit 1
