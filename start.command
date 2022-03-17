@@ -33,7 +33,8 @@ status=$?
 if test $status -eq 0 ; then
     echo "${GREEN}Starting up the application...${NC}"
     sleep 30
-    open http://localhost
+    open -a "Google Chrome" http://localhost
+    /usr/bin/osascript -e "tell application \"Google Chrome\"" -e "activate" -e "tell application \"System Events\"" -e "keystroke \"f\" using {control down, command down}" -e "tell application \"System Events\"" -e "keystroke \"f\" using {control down, command down}"  -e "end tell"  -e "end tell" -e "end tell"
 else
     exit 1
 fi
