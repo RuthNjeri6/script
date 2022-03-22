@@ -4,4 +4,4 @@ env
 .mongo-init.js
 mongo-init.js
 log
-biomarker-data/investigators
+biomarker-data/investigators/*
