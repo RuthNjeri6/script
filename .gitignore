@@ -3,6 +3,5 @@
 env
 .mongo-init.js
 mongo-init.js
-log/install_errors.txt
-log/start_errors.txt
-log/update_errors.txt
+log
+biomarker-data/investigators/*

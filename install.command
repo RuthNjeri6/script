@@ -13,7 +13,7 @@ trap '[[ $? -ne 0 ]] && echo  "${RED}An error occurred while installing the soft
 cd -- "$(dirname "$BASH_SOURCE")"
 
 # make the other scripts executable(updte.command, start.command)
-files=("update.command" "start.command")
+files=("update.command" "start.command" "./biomarker-data/get-data.command")
 for file in ${files[@]}; do
     if [[ -x "$file" ]]
     then
