@@ -47,7 +47,7 @@ cd -- "$(dirname "$BASH_SOURCE")"
     # create volume
     docker volume create data-vol 2>> ./log/get_data_errors
     docker pull 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-data-model:latest 2>> ./log/get_data_errors.txt
-    docker run --name=biomarker-data --env-file ./.env  -v data-vol:/home/app/data -v /var/run/docker.sock:/var/run/docker.sock --network=bm 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-data-model:latest
+    docker run --name=biomarker-data --env-file ./.env  -v data-vol:/home/app/data -v /var/run/docker.sock:/var/run/docker.sock --network=bm 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-data-model:latest 2>> ./log/get_data_errors.txt
     # docker run --name=biomarker-data --env-file ./.env  -v data-vol:/home/app/data -v /var/run/docker.sock:/var/run/docker.sock -v /Users/ruthnjeri/work/biomarker-data-model://home/app/ --network=bm data-model
     docker cp biomarker-data:/home/app/data/investigators ./biomarker-data 2>> ./log/get_data_errors.txt
 
