@@ -5,6 +5,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m'
+YELLOW='\033[1;33m'
 
 # echo an error message before exiting with a status not equal to 0
 trap '[[ $? -ne 0 ]] && echo  "${RED}An error occurred while installing the software!!!. Please contact the Administrator to report the problem.${NC}"' EXIT
@@ -88,6 +89,15 @@ spinUp (){
 
     # remove all existing containers
     if [ ${#containers[@]} -ne 0 ]; then
+        # Confirm Installation
+        echo "${YELLOW} Reinstalling will delete your currect data. Do you wish to Reinstall this Software? Please answer 1 for yes or 2 for no."
+        select yn in "Yes" "No"; do
+            case $yn in
+                Yes ) break;;
+                No ) echo "${NC}"; exit;;
+            esac
+        done
+        echo "${NC}"
         for container in ${containers[@]}; do
             echo $container
             docker container stop $container && docker system prune -af --volumes 2>> log/install_errors.txt
