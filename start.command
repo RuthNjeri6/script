@@ -32,10 +32,10 @@ docker-compose --project-name biomarker-offline up -d --force-recreate 2>> log/s
 status=$?
 if test $status -eq 0 ; then
     echo "${GREEN}Starting up the application...${NC}"
-    killall 'Google Chrome'
+    killall 'Google Chrome' 2>> log/start_errors.txt
     sleep 30
-    open -a "Google Chrome" http://localhost
-    /usr/bin/osascript -e "tell application \"Google Chrome\"" -e "activate" -e "tell application \"System Events\"" -e "keystroke \"f\" using {control down, command down}" -e "tell application \"System Events\"" -e "keystroke \"f\" using {shift down, command down}" -e "end tell"  -e "end tell" -e "end tell"
+    /usr/bin/osascript -e "tell application \"Google Chrome\"" -e "activate" -e "tell application \"System Events\"" -e "keystroke \"f\" using {control down, command down}" -e "tell application \"System Events\"" -e "keystroke \"f\" using {shift down, command down}" -e "end tell"  -e "end tell" -e "end tell" 2>> log/start_errors.txt
+    open -a "Google Chrome" http://localhost 2>> log/start_errors.txt
 else
     exit 1
 fi
