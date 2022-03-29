@@ -5,3 +5,4 @@ env
 mongo-init.js
 log
 biomarker-data/investigators/*
+*.dmg
