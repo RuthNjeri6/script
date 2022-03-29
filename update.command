@@ -61,6 +61,7 @@ cd -- "$(dirname "$BASH_SOURCE")"
     fi
 
     # run the containerners with the latest images
+    docker-compose -f docker-compose-mongo.yaml  up -d --force-recreate 2>> log/update_errors.txt
     docker-compose --project-name biomarker-offline up --force-recreate -d 2>> log/update_errors.txt
     up_status=$?
     if test $up_status -ne 0; then
