@@ -26,18 +26,6 @@ cd -- "$(dirname "$BASH_SOURCE")"
     sleep 30
     done
     fi
-    
-    # run aws docker image and login to ecr
-    docker run --rm  -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password \
-        --region eu-central-1 \
-    | docker login \
-        --username AWS \
-        --password-stdin 715941344009.dkr.ecr.eu-central-1.amazonaws.com 2>> ./log/get_data_errors.txt
-
-    aws_status=$?
-    if test $aws_status -ne 0 ; then
-        exit 1
-    fi
 
     # check for existing containers and remove them
     if docker container inspect biomarker-data >/dev/null 2>&1; then
@@ -49,11 +37,9 @@ cd -- "$(dirname "$BASH_SOURCE")"
     if [ -d "$WORKING_DIR" ];
         then rm -Rf $WORKING_DIR; 2>> ./log/get_data_errors.txt
     fi
-    # create volume
-#   docker volume create data-vol 2>> ./log/get_data_errors.txt
-  docker pull 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-data-model:latest 2>> ./log/get_data_errors.txt
-  docker run --name=biomarker-data --env-file ./.env  -v /var/run/docker.sock:/var/run/docker.sock --network=bm 715941344009.dkr.ecr.eu-central-1.amazonaws.com/biomarker-data-model:latest 2>> ./log/get_data_errors.txt
-#     docker run --name=biomarker-data --env-file ./.env  -v /var/run/docker.sock:/var/run/docker.sock -v /Users/ruthnjeri/work/biomarker-data-model://home/app/ --network=bm data-model 2>> ./log/get_data_errors.txt
+    # Load image from tar file and run container using the image
+    docker load --input metrica-data-image.tar.gz 2>> ./log/get_data_errors.txt
+    docker run --name=biomarker-data --env-file ./.env  -v /var/run/docker.sock:/var/run/docker.sock --network=bm metrica-data-image:latest 2>> ./log/get_data_errors.txt
     docker cp biomarker-data:/home/app/data/investigators ./biomarker-data 2>> ./log/get_data_errors.txt
 
     docker rm  -v --force biomarker-data 2>> ./log/get_data_errors.txt

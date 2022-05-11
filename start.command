@@ -28,6 +28,7 @@ if (! docker stats --no-stream ); then
 fi
 
 # spin up the containers(most will be up to date) and open the application on the browser
+docker-compose --project-name biomarkers-offline -f docker-compose-mongo.yaml up -d --force-recreate 2>> log/start_errors.txt
 docker-compose --project-name biomarker-offline up -d --force-recreate 2>> log/start_errors.txt
 status=$?
 if test $status -eq 0 ; then
